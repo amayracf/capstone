@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard SilenciOSO - UCIN Final</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --morado-principal: #8e44ad;
+            --morado-claro: #f4eef8;
+            --gris-fondo: #f0f2f5;
+            --texto: #2c3e50;
+            --verde-optimo: #27ae60;
+            --naranja-mod: #f39c12;
+            --rojo-alerta: #e74c3c;
+        }
+
+        /* Suaviza el desplazamiento al hacer clic en los enlaces internos */
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--gris-fondo);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .contenedor {
+            width: 98vw;
+            max-width: 1400px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--morado-claro);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .layout-principal {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .columna-izquierda {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .columna-derecha {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* --- TARJETAS NAVEGABLES --- */
+        .grid-resumen {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .tarjeta-enlace {
+            text-decoration: none;
+            color: inherit;
+            background: var(--morado-claro);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .tarjeta-enlace:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-color: var(--morado-principal);
+        }
+
+        .tarjeta-enlace .dato { font-size: 1.2rem; font-weight: bold; margin: 5px 0; }
+        .tarjeta-enlace h3 { font-size: 0.85rem; margin: 0; color: var(--texto); }
+
+        .seccion-graficos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .caja-grafico {
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .seccion-detalles {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 15px;
+        }
+
+        .alerta-box {
+            padding: 10px;
+            border-radius: 10px;
+            width: 45%;
+            text-align: center;
+        }
+
+        .recom-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            background: #f9f9f9;
+        }
+
+        .icon-circle {
+            width: 35px; height: 35px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: #e8f6ef; color: var(--verde-optimo); font-size: 1.1rem;
+        }
+
+        .barra-nivel-contenedor {
+            position: relative;
+            height: 12px;
+            border-radius: 10px;
+            background: linear-gradient(to right, #7ed6a5 0%, #7ed6a5 45%, #ffcc5c 45%, #ffcc5c 66%, #ff8b94 66%, #ff8b94 100%);
+            margin: 30px 0 10px 0;
+        }
+
+        #marcador-triangulo {
+            position: absolute;
+            top: -15px; width: 0; height: 0;
+            border-left: 8px solid transparent; border-right: 8px solid transparent;
+            border-top: 12px solid var(--morado-principal);
+            transition: left 0.5s ease; transform: translateX(-50%);
+        }
+
+        .labels-barra { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: bold; margin-top: 5px; }
+
+        .contenedor-tabla { max-height: 280px; overflow-y: scroll; border: 1px solid #eee; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { background: var(--morado-claro); color: var(--morado-principal); padding: 6px; position: sticky; top: 0; z-index: 5;}
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+
+        button { font-size: 0.75rem; padding: 8px 12px; margin: 2px; border-radius: 5px; border: none; color: white; cursor: pointer; font-weight: bold; }
+        canvas { max-height: 160px; }
+    </style>
+</head>
+<body>
+
+<div class="contenedor">
+    <header>
+        <div class="titulo">
+            <h1 style="margin:0; color:var(--morado-principal); font-size: 1.2rem;">REPORTE ACÚSTICO UCIN - SilenciOSO</h1>
+            <p style="margin:0; font-size: 0.75rem;">Turno Noche | 10/05/2026</p>
+        </div>
+        <div id="estado-general" style="font-weight: bold; font-size: 0.9rem;">CARGANDO...</div>
+    </header>
+
+    <div class="layout-principal">
+        <div class="columna-izquierda">
+            
+            <div class="grid-resumen">
+                <a href="#seccion-nivel-ruido" class="tarjeta-enlace">
+                    <h3>Promedio Turno</h3>
+                    <p id="resumen-promedio" class="dato">--</p>
+                    <span id="txt-mod-promedio" style="font-size: 0.65rem; font-weight: bold;"></span>
+                </a>
+                <div class="tarjeta-enlace" style="cursor: default; border:none;">
+                    <h3>Máximo Turno</h3>
+                    <p id="resumen-maximo" class="dato">--</p>
+                </div>
+                <a href="#seccion-alertas" class="tarjeta-enlace">
+                    <h3>Alertas Turno</h3>
+                    <p id="resumen-alertas" class="dato">0</p>
+                    <span style="font-size: 0.6rem;">Ver detalle ↓</span>
+                </a>
+            </div>
+
+            <div class="seccion-graficos">
+                <div class="caja-grafico">
+                    <h3 style="font-size:0.8rem; margin:0 0 5px 0;">TIPO DE RUIDO (%)</h3>
+                    <div style="display: flex; align-items: center; justify-content: space-between; height: 160px;">
+                        <div style="width: 180px; height: 100%; position: relative;">
+                            <canvas id="graficoRuido"></canvas>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                                <span style="font-size: 13px; color: var(--texto); font-weight: bold; line-height: 1.1;">Distribución<br>del ruido</span>
+                            </div>
+                        </div>
+                        <div style="font-size: 14px; line-height: 1.8; padding-left: 10px;">
+                            <div><span style="color:#6c5ce7; font-size: 18px;">●</span> Voz <b>38%</b></div>
+                            <div><span style="color:#ff7675; font-size: 18px;">●</span> Alarmas <b>24%</b></div>
+                            <div><span style="color:#55efc4; font-size: 18px;">●</span> Equipos <b>16%</b></div>
+                            <div><span style="color:#a29bfe; font-size: 18px;">●</span> Otros <b>22%</b></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="caja-grafico">
+                    <h3 style="font-size:0.8rem; margin:0 0 10px 0;">COMPARATIVA</h3>
+                    <canvas id="graficoBarras"></canvas>
+                </div>
+            </div>
+
+            <div id="seccion-alertas" class="seccion-detalles">
+                <div class="caja-grafico" style="border-top: 3px solid var(--rojo-alerta);">
+                    <h3 style="font-size:0.8rem; margin-bottom: 15px;">ALERTAS DEL TURNO</h3>
+                    <div style="display: flex; justify-content: space-around; margin-bottom: 10px;">
+                        <div class="alerta-box" style="background: #fff8f0; color: #f39c12;">
+                            <span style="font-size: 0.7rem;">Moderadas</span><br><b style="font-size: 1.3rem;" id="count-mod">--</b>
+                        </div>
+                        <div class="alerta-box" style="background: #fff5f5; color: #e74c3c;">
+                            <span style="font-size: 0.7rem;">Altas</span><br><b style="font-size: 1.3rem;" id="count-high">--</b>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.75rem; color: #666;">
+                        🕒 Mayor concentración: <b>02:00 - 03:00</b><br>
+                        👥 Fuente frecuente: <b>Conversaciones</b>
+                    </div>
+                </div>
+
+                <div class="caja-grafico">
+                    <h3 style="font-size:0.8rem; margin-bottom: 15px;">RECOMENDACIONES PARA HOY</h3>
+                    <div class="recom-item"><div class="icon-circle">💬</div><div>Reducir conversaciones cerca de Cuna C-03</div></div>
+                    <div class="recom-item"><div class="icon-circle" style="background: #e7f3ff; color: #3498db;">🚪</div><div>Evitar apertura simultánea de incubadoras</div></div>
+                    <div class="recom-item"><div class="icon-circle" style="background: #f4eef8; color: var(--morado-principal);">🔔</div><div>Recordar pausas acústicas</div></div>
+                </div>
+            </div>
+
+            <div id="seccion-nivel-ruido" class="caja-grafico" style="border-top: 3px solid var(--morado-principal);">
+                <h3 style="font-size:0.8rem; margin:0;">NIVEL DE RUIDO DURANTE EL TURNO</h3>
+                <div class="barra-nivel-contenedor"><div id="marcador-triangulo"></div></div>
+                <div class="labels-barra">
+                    <div style="color:var(--verde-optimo)">Tranquilo<br>0-45 dBA</div>
+                    <div style="color:var(--naranja-mod)">Moderado<br>45-60 dBA</div>
+                    <div style="color:var(--rojo-alerta)">Alto<br>> 60 dBA</div>
+                </div>
+                <div class="info-mensaje">🔊 Mantener el ruido bajo <b>45 dBA</b> protege el descanso neonatal.</div>
+            </div>
+            
+            <div class="panel-control" style="text-align:center; padding:10px; border:1px dashed #ddd; border-radius:10px;">
+                <button onclick="simular('silencio')" style="background: var(--verde-optimo);">Simular Silencio</button>
+                <button onclick="simular('moderado')" style="background: var(--naranja-mod);">Simular Moderado</button>
+                <button onclick="simular('alerta')" style="background: var(--rojo-alerta);">Simular Alerta</button>
+            </div>
+        </div>
+
+        <div class="columna-derecha">
+            <div class="caja-grafico">
+                <h3 style="font-size:0.8rem; margin:0 0 10px 0;">NIVELES POR ZONA (dBA)</h3>
+                <div class="contenedor-tabla">
+                    <table>
+                        <thead><tr><th>Zona</th><th style="text-align:center;">Promedio</th></tr></thead>
+                        <tbody id="tabla-cunas"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="caja-rec" class="caja-grafico" style="border-left: 4px solid var(--rojo-alerta); padding: 10px;">
+                <p id="texto-rec" style="font-size: 0.7rem; margin: 0; line-height: 1.3;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let chartBarras, chartRuido;
+
+    function generarFilas() {
+        const tbody = document.getElementById('tabla-cunas');
+        let html = '';
+        for(let i=1; i<=13; i++) {
+            html += `<tr><td>Cuna C-${i.toString().padStart(2, '0')}</td><td class="valor-ruido" style="text-align:center; font-weight:bold;">--</td></tr>`;
+        }
+        html += `<tr><td style="font-weight:bold;">Estación Enf.</td><td class="valor-ruido" style="text-align:center; font-weight:bold;">--</td></tr>`;
+        tbody.innerHTML = html;
+    }
+
+    function inicializarGraficos() {
+        const ctx1 = document.getElementById('graficoRuido').getContext('2d');
+        chartRuido = new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['Voz', 'Alarmas', 'Equipos', 'Otros'],
+                datasets: [{ data: [38, 24, 16, 22], backgroundColor: ['#6c5ce7', '#ff7675', '#55efc4', '#a29bfe'], borderWidth: 0 }]
+            },
+            options: { cutout: '75%', plugins: { legend: { display: false } }, maintainAspectRatio: false }
+        });
+
+        const ctx2 = document.getElementById('graficoBarras').getContext('2d');
+        chartBarras = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Ayer', 'Hoy'],
+                datasets: [{ data: [49, 52], backgroundColor: ['#bdc3c7', '#8e44ad'], borderRadius: 4 }]
+            },
+            options: { scales: { y: { beginAtZero: true, max: 90, ticks:{font:{size:9}} } }, plugins: { legend: { display: false } }, maintainAspectRatio: false }
+        });
+    }
+
+    function actualizar() {
+        const filas = document.querySelectorAll('#tabla-cunas tr');
+        let suma = 0, max = 0, modCount = 0, highCount = 0;
+
+        filas.forEach(f => {
+            const celdaVal = f.querySelector('.valor-ruido');
+            const val = parseInt(celdaVal.innerText);
+            suma += val; if(val > max) max = val;
+            if(val < 45) celdaVal.style.color = "var(--verde-optimo)";
+            else if(val <= 60) { celdaVal.style.color = "var(--naranja-mod)"; modCount++; }
+            else { celdaVal.style.color = "var(--rojo-alerta)"; highCount++; }
+        });
+
+        const prom = Math.round(suma / filas.length);
+        document.getElementById('resumen-promedio').innerText = prom + " dBA";
+        document.getElementById('resumen-maximo').innerText = max + " dBA";
+        document.getElementById('resumen-alertas').innerText = modCount + highCount;
+        document.getElementById('count-mod').innerText = modCount;
+        document.getElementById('count-high').innerText = highCount;
+        
+        let posicion = (prom / 90) * 100;
+        if(posicion > 100) posicion = 100;
+        document.getElementById('marcador-triangulo').style.left = posicion + "%";
+
+        const estGral = document.getElementById('estado-general');
+        const txtMod = document.getElementById('txt-mod-promedio');
+        const cajaRec = document.getElementById('caja-rec');
+        const rec = document.getElementById('texto-rec');
+
+        if(prom < 45) {
+            estGral.innerText = "ESTADO: ÓPTIMO"; estGral.style.color = "var(--verde-optimo)";
+            txtMod.innerText = "Tranquilo"; txtMod.style.color = "var(--verde-optimo)";
+            cajaRec.style.borderLeftColor = "var(--verde-optimo)";
+            rec.innerText = "Ambiente ideal para el descanso neonatal.";
+        } else if(prom <= 60) {
+            estGral.innerText = "ESTADO: MODERADO"; estGral.style.color = "var(--naranja-mod)";
+            txtMod.innerText = "Moderado"; txtMod.style.color = "var(--naranja-mod)";
+            cajaRec.style.borderLeftColor = "var(--naranja-mod)";
+            rec.innerText = "Nivel de ruido moderado. Evitar conversaciones innecesarias.";
+        } else {
+            estGral.innerText = "ESTADO: NO ÓPTIMO"; estGral.style.color = "var(--rojo-alerta)";
+            txtMod.innerText = "Alto"; txtMod.style.color = "var(--rojo-alerta)";
+            cajaRec.style.borderLeftColor = "var(--rojo-alerta)";
+            rec.innerText = "¡Alerta! Niveles críticos detectados. Reducir ruido inmediatamente.";
+        }
+
+        chartBarras.data.datasets[0].data[1] = prom;
+        chartBarras.update();
+    }
+
+    function simular(modo) {
+        const celdas = document.querySelectorAll('.valor-ruido');
+        celdas.forEach(celda => {
+            let min, max;
+            const suerte = Math.random();
+            if (modo === 'silencio') { min = suerte > 0.8 ? 45 : 30; max = suerte > 0.8 ? 52 : 44; }
+            else if (modo === 'moderado') {
+                if (suerte > 0.7) { min = 61; max = 65; }
+                else if (suerte > 0.3) { min = 45; max = 58; }
+                else { min = 35; max = 44; }
+            } else { min = suerte > 0.4 ? 61 : 46; max = suerte > 0.4 ? 85 : 60; }
+            celda.innerText = Math.floor(Math.random() * (max - min + 1)) + min;
+        });
+        actualizar();
+    }
+
+    window.onload = () => {
+        generarFilas();
+        inicializarGraficos();
+        simular('moderado'); 
+    };
+</script>
+</body>
+</html>
