@@ -223,19 +223,23 @@ tbody tr:hover{background:var(--surface2);}
   </div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('resumen')" id="tab-resumen">
-      <span class="tab-icon">📊</span> Resumen del Turno
+      Resumen del Turno
     </button>
     <button class="nav-tab" onclick="showSection('meta')" id="tab-meta">
-      <span class="tab-icon">🎯</span> Cumplimiento de Meta
+      Cumplimiento de Meta
     </button>
     <button class="nav-tab" onclick="showSection('zonas')" id="tab-zonas">
-      <span class="tab-icon">🛏</span> Zonas y Alertas
+      Zonas y Alertas
     </button>
     <button class="nav-tab" onclick="showSection('tendencia')" id="tab-tendencia">
-      <span class="tab-icon">📈</span> Tendencias
+      Tendencias
+    </button>
+
+    <button class="nav-tab" onclick="showSection('mapa')" id="tab-mapa">
+      Mapa UCIN
     </button>
     <button class="nav-tab" onclick="showSection('operacion')" id="tab-operacion">
-      <span class="tab-icon">⚙️</span> Operación
+      Operación
     </button>
   </div>
   <div class="estado-pill" id="estado-pill" style="background:var(--morado-l);color:var(--morado);">
@@ -256,9 +260,10 @@ tbody tr:hover{background:var(--surface2);}
       <div class="kpi-tag" id="kpi-prom-tag" style="background:var(--morado-l);color:var(--morado);">--</div>
     </div>
     <div class="kpi" onclick="showSection('meta')">
-      <div class="kpi-lbl">% Bajo Meta (45 dBA)</div>
-      <div class="kpi-val" id="kpi-meta">-- <span>%</span></div>
-      <div class="kpi-tag" style="background:var(--verde-l);color:var(--verde);">Objetivo turno</div>
+      <div class="kpi-lbl" style="font-size:0.72rem;font-weight:700;color:var(--morado);letter-spacing:0.06em;text-transform:uppercase;">⭐ Meta del turno</div>
+      <div class="kpi-val" id="kpi-meta" style="font-size:2.8rem;color:var(--morado);">-- <span>%</span></div>
+      <div style="font-size:0.68rem;color:var(--text2);margin-top:2px;">del turno bajo <strong>45 dBA</strong></div>
+      <div style="font-size:0.62rem;color:var(--text3);margin-top:3px;">45 dBA = límite seguro para el descanso neonatal</div>
     </div>
     <div class="kpi" onclick="showSection('zonas')">
       <div class="kpi-lbl">Alertas Totales</div>
@@ -274,76 +279,111 @@ tbody tr:hover{background:var(--surface2);}
     </div>
   </div>
 
-  <div class="gcols">
-    <div class="col">
-      <!-- Nivel de ruido barra -->
-      <div class="card">
-        <div class="card-hd">
-          <div class="card-icon">🔊</div>
-          <span class="card-title">Nivel de Ruido Actual</span>
-        </div>
-        <div class="card-body">
-          <div class="bar-track"><div class="bar-cursor" id="bar-cursor" style="left:50%;"></div></div>
-          <div class="bar-labels">
-            <div class="bar-lbl" style="color:var(--verde);">Tranquilo · 0–45</div>
-            <div class="bar-lbl" style="color:var(--naranja);">Moderado · 45–60</div>
-            <div class="bar-lbl" style="color:var(--rojo);">Alto · &gt;60 dBA</div>
-          </div>
-          <div class="noise-info" id="noise-info">
-            <span>🛡</span><span>Mantener bajo <strong>45 dBA</strong> protege el descanso neonatal.</span>
-          </div>
-        </div>
-      </div>
+  <!-- Recomendaciones horizontales debajo de KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;">
+    <div style="background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px;border-top:3px solid var(--morado);">
+      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--morado);margin-bottom:8px;">Voz</div>
+      <div style="font-size:0.82rem;color:var(--text);line-height:1.5;"><strong>Hablar siempre en voz baja.</strong> La voz humana es la mayor fuente de ruido en la UCIN — y también la más controlable por el equipo.</div>
+    </div>
+    <div style="background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px;border-top:3px solid var(--naranja);">
+      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--naranja);margin-bottom:8px;">Incubadoras</div>
+      <div style="font-size:0.82rem;color:var(--text);line-height:1.5;"><strong>Abrir y cerrar con cuidado.</strong> Una apertura brusca puede superar los 70 dBA — como una aspiradora al oído del bebé.</div>
+    </div>
+    <div style="background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px;border-top:3px solid var(--verde);">
+      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--verde);margin-bottom:8px;">Por qué importa</div>
+      <div style="font-size:0.82rem;color:var(--text);line-height:1.5;"><strong>Los bebés prematuros no pueden decirnos que les duele el ruido.</strong> Solo nosotros podemos protegerlos. Cada momento de silencio importa.</div>
+    </div>
+  </div>
 
-      <!-- Timeline horario -->
-      <div class="card">
-        <div class="card-hd">
-          <div class="card-icon">⏱</div>
-          <span class="card-title">Evolución del Turno por Hora</span>
+  <!-- Fila 1: Nivel de ruido + Fuentes de ruido (misma altura) -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+    <!-- Nivel de ruido barra -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-icon">🔊</div>
+        <span class="card-title">Nivel de Ruido Actual</span>
+      </div>
+      <div class="card-body">
+        <div style="position:relative;">
+          <div class="bar-track" id="bar-track-wrap"><div class="bar-cursor" id="bar-cursor" style="left:50%;"></div></div>
+          <div id="bar-tooltip" style="position:absolute;top:-28px;transform:translateX(-50%);background:#1e1b2e;color:#fff;padding:4px 10px;border-radius:6px;font-size:0.75rem;font-family:var(--mono);font-weight:600;pointer-events:none;display:none;white-space:nowrap;"></div>
         </div>
-        <div class="card-body" style="padding-bottom:10px;">
-          <div class="timeline-wrap"><canvas id="chartTimeline"></canvas></div>
+        <div class="bar-labels">
+          <div class="bar-lbl" style="color:var(--verde);">Tranquilo · 0–45</div>
+          <div class="bar-lbl" style="color:var(--naranja);">Moderado · 45–60</div>
+          <div class="bar-lbl" style="color:var(--rojo);">Alto · &gt;60 dBA</div>
+        </div>
+        <div class="noise-info" id="noise-info">
+          <span>🛡</span><span>Mantener bajo <strong>45 dBA</strong> protege el descanso neonatal.</span>
         </div>
       </div>
     </div>
 
-    <div class="col">
-      <!-- Tipo ruido donut -->
-      <div class="card">
-        <div class="card-hd">
-          <div class="card-icon">🎵</div>
-          <span class="card-title">Fuentes de Ruido</span>
-        </div>
-        <div class="card-body">
-          <div class="donut-wrap">
-            <div class="donut-canvas-wrap">
-              <canvas id="chartDonut" style="max-height:130px;"></canvas>
-              <div class="donut-center">
-                <div style="font-size:1rem;font-weight:300;font-family:var(--mono);color:var(--text);">100%</div>
-                <div style="font-size:0.6rem;color:var(--text3);">total</div>
-              </div>
+    <!-- Fuentes de Ruido -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-icon">🎵</div>
+        <span class="card-title">Fuentes de Ruido</span>
+      </div>
+        <div class="card-body" style="display:flex;align-items:center;gap:16px;padding:14px 18px;">
+          <!-- Donut pequeño -->
+          <div style="position:relative;flex-shrink:0;width:90px;height:90px;display:flex;align-items:center;justify-content:center;">
+            <canvas id="chartDonut" style="width:90px!important;height:90px!important;"></canvas>
+            <div style="position:absolute;text-align:center;pointer-events:none;">
+              <div style="font-size:0.75rem;font-weight:300;font-family:var(--mono);color:var(--text);line-height:1;">100%</div>
             </div>
-            <div class="legend-list">
-              <div class="legend-item"><div style="display:flex;align-items:center;"><div class="legend-dot" style="background:#7c3aed;"></div><span style="color:var(--text2);">Voz</span></div><span style="font-family:var(--mono);font-weight:600;">38%</span></div>
-              <div class="legend-item"><div style="display:flex;align-items:center;"><div class="legend-dot" style="background:#f87171;"></div><span style="color:var(--text2);">Alarmas</span></div><span style="font-family:var(--mono);font-weight:600;">24%</span></div>
-              <div class="legend-item"><div style="display:flex;align-items:center;"><div class="legend-dot" style="background:#34d399;"></div><span style="color:var(--text2);">Equipos</span></div><span style="font-family:var(--mono);font-weight:600;">16%</span></div>
-              <div class="legend-item"><div style="display:flex;align-items:center;"><div class="legend-dot" style="background:#a78bfa;"></div><span style="color:var(--text2);">Otros</span></div><span style="font-family:var(--mono);font-weight:600;">22%</span></div>
+          </div>
+          <!-- Leyenda en grid 2x2 compacto -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;flex:1;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;">
+              <div style="width:9px;height:9px;border-radius:2px;background:#7c3aed;flex-shrink:0;"></div>
+              <span style="color:var(--text2);">Voz</span>
+              <span style="font-family:var(--mono);font-weight:600;margin-left:auto;">38%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;">
+              <div style="width:9px;height:9px;border-radius:2px;background:#f87171;flex-shrink:0;"></div>
+              <span style="color:var(--text2);">Alarmas</span>
+              <span style="font-family:var(--mono);font-weight:600;margin-left:auto;">24%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;">
+              <div style="width:9px;height:9px;border-radius:2px;background:#34d399;flex-shrink:0;"></div>
+              <span style="color:var(--text2);">Equipos</span>
+              <span style="font-family:var(--mono);font-weight:600;margin-left:auto;">16%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;">
+              <div style="width:9px;height:9px;border-radius:2px;background:#a78bfa;flex-shrink:0;"></div>
+              <span style="color:var(--text2);">Otros</span>
+              <span style="font-family:var(--mono);font-weight:600;margin-left:auto;">22%</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Recomendaciones -->
-      <div class="card">
-        <div class="card-hd">
-          <div class="card-icon" style="background:var(--verde-l);">💡</div>
-          <span class="card-title">Recomendaciones del Turno</span>
+    </div>
+  </div>
+
+  <!-- Fila 2: Evolución del turno — ancho completo -->
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-hd">
+      <div class="card-icon">⏱</div>
+      <span class="card-title">Evolución del Turno por Hora</span>
+    </div>
+    <div class="card-body" style="padding-bottom:10px;">
+      <div style="height:160px;"><canvas id="chartTimeline"></canvas></div>
+      <div id="shift-bar-wrap" style="margin-top:6px;display:flex;align-items:stretch;">
+        <div id="shift-bar-offset" style="flex-shrink:0;"></div>
+        <div id="shift-bar" style="display:flex;border-radius:6px;overflow:hidden;font-size:0.68rem;font-weight:600;height:22px;flex:1;">
+          <div id="shift-manana" style="background:rgba(124,58,237,0.12);color:#7c3aed;display:flex;align-items:center;justify-content:center;border-right:2px solid #7c3aed;white-space:nowrap;">Turno Ma&#241;ana</div>
+          <div id="shift-tarde"  style="background:rgba(217,119,6,0.12);color:#d97706;display:flex;align-items:center;justify-content:center;border-right:2px solid #d97706;white-space:nowrap;">Turno Tarde</div>
+          <div id="shift-noche"  style="background:rgba(79,70,229,0.12);color:#4f46e5;display:flex;align-items:center;justify-content:center;white-space:nowrap;">Turno Noche</div>
         </div>
-        <div class="card-body" style="padding:12px 14px;">
-          <div class="recom-item"><div class="recom-icon" style="background:var(--morado-l);">💬</div><div>Reducir conversaciones cerca de <strong>Incubadora C-03</strong></div></div>
-          <div class="recom-item"><div class="recom-icon" style="background:#e0f2fe;">🚪</div><div>Evitar apertura simultánea de incubadoras</div></div>
-          <div class="recom-item"><div class="recom-icon" style="background:var(--verde-l);">🔔</div><div>Recordar pausas acústicas programadas</div></div>
-          <div id="rec-box" class="rec-box" style="margin-top:8px;"></div>
+      </div>
+      <div id="shift-labels-wrap" style="display:flex;font-size:0.6rem;color:#9ca3af;margin-top:2px;">
+        <div id="shift-labels-offset" style="flex-shrink:0;"></div>
+        <div style="display:flex;flex:1;">
+          <div id="shift-label-m" style="text-align:center;">08h&#8211;14h</div>
+          <div id="shift-label-t" style="text-align:center;">15h&#8211;22h</div>
+          <div id="shift-label-n" style="text-align:center;">23h&#8211;07h</div>
         </div>
       </div>
     </div>
@@ -361,7 +401,7 @@ tbody tr:hover{background:var(--surface2);}
   <div class="g3">
     <!-- Gauge principal -->
     <div class="card" style="grid-column:span 1;">
-      <div class="card-hd"><div class="card-icon">🎯</div><span class="card-title">% Tiempo Bajo Meta</span></div>
+      <div class="card-hd"><div class="card-icon">🎯</div><span class="card-title">Tiempo bajo el límite seguro (45 dBA)</span></div>
       <div class="gauge-wrap">
         <svg class="gauge-svg" width="220" height="140" viewBox="0 0 220 140">
           <!-- Track -->
@@ -371,7 +411,7 @@ tbody tr:hover{background:var(--surface2);}
                 stroke-dasharray="283" stroke-dashoffset="283" style="transition:stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1),stroke 0.4s;"/>
           <!-- Texto -->
           <text id="gauge-pct" class="gauge-pct" x="110" y="108" text-anchor="middle" font-family="DM Mono,monospace" font-size="36" font-weight="300" fill="#1e1b2e">--%</text>
-          <text class="gauge-lbl" x="110" y="130" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#6b7280">del turno bajo 45 dBA</text>
+          <text class="gauge-lbl" x="110" y="130" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#6b7280">del turno bajo el límite seguro</text>
         </svg>
         <div class="gauge-meta">
           <div class="gauge-meta-item">
@@ -478,6 +518,7 @@ tbody tr:hover{background:var(--surface2);}
       </div>
     </div>
   </div>
+<div id="rec-box" style="display:none;"></div>
 </section>
 
 <!-- ══════════════════════════════════════════════
@@ -583,6 +624,51 @@ tbody tr:hover{background:var(--surface2);}
   </div>
 </section>
 
+<section class="section" id="section-mapa">
+  <p class="sec-title">Mapa Interactivo de la UCIN</p>
+  <p class="sec-sub">Pasa el cursor sobre cada incubadora para ver su nivel de ruido en tiempo real</p>
+  <div style="max-width:700px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap;font-size:12px;color:var(--text2);">
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:13px;height:13px;border-radius:3px;background:#d1fae5;border:1px solid #34d399;"></div>Tranquilo &lt;45 dBA</div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:13px;height:13px;border-radius:3px;background:#fef3c7;border:1px solid #fbbf24;"></div>Moderado 45–60 dBA</div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:13px;height:13px;border-radius:3px;background:#fee2e2;border:1px solid #f87171;"></div>Alto &gt;60 dBA</div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:13px;height:13px;border-radius:3px;background:#f0eff9;border:1px solid #c4b5fd;"></div>Sin datos</div>
+    </div>
+    <div style="position:relative;width:100%;">
+      <svg id="mapa-svg" viewBox="0 0 660 470" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+        <rect x="0" y="0" width="660" height="470" fill="#f5f4f1"/>
+        <path d="M 8 8 L 652 8 L 652 430 L 370 430 L 370 458 L 8 458 Z" fill="#e9e8e3" stroke="#1f2937" stroke-width="5" stroke-linejoin="round"/>
+        <rect x="188" y="8" width="90" height="90" fill="#1f2937"/>
+        <line x1="96" y1="276" x2="96" y2="458" stroke="#1f2937" stroke-width="4"/>
+        <line x1="8"  y1="276" x2="96" y2="276" stroke="#1f2937" stroke-width="4"/>
+        <line x1="8"  y1="366" x2="96" y2="366" stroke="#1f2937" stroke-width="4"/>
+        <line x1="474" y1="275" x2="634" y2="275" stroke="#1f2937" stroke-width="4"/>
+        <rect x="170" y="268" width="200" height="190" rx="5" fill="#fee2e2" stroke="#f87171" stroke-width="1.8"/>
+        <text x="270" y="355" text-anchor="middle" font-size="11" fill="#b91c1c" font-family="sans-serif" font-weight="500">Estación de</text>
+        <text x="270" y="371" text-anchor="middle" font-size="11" fill="#b91c1c" font-family="sans-serif" font-weight="500">enfermería</text>
+        <g id="mapa-C-05" style="cursor:pointer;"><rect x="8"   y="8"   width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="24"  y="24"  width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="32"  y="32"  width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="52"  y="79"  text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-05</text></g>
+        <g id="mapa-C-06" style="cursor:pointer;"><rect x="98"  y="8"   width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="114" y="24"  width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="122" y="32"  width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="142" y="79"  text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-06</text></g>
+        <g id="mapa-C-07" style="cursor:pointer;"><rect x="280" y="8"   width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="296" y="24"  width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="304" y="32"  width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="324" y="79"  text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-07</text></g>
+        <g id="mapa-C-08" style="cursor:pointer;"><rect x="377" y="8"   width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="393" y="24"  width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="401" y="32"  width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="421" y="79"  text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-08</text></g>
+        <g id="mapa-C-09" style="cursor:pointer;"><rect x="467" y="8"   width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="483" y="24"  width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="491" y="32"  width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="511" y="79"  text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-09</text></g>
+        <g id="mapa-C-10" style="cursor:pointer;"><rect x="557" y="8"   width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="573" y="24"  width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="581" y="32"  width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="601" y="79"  text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-10</text></g>
+        <g id="mapa-C-04" style="cursor:pointer;"><rect x="8"   y="96"  width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="24"  y="112" width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="32"  y="120" width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="52"  y="167" text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-04</text></g>
+        <g id="mapa-C-03" style="cursor:pointer;"><rect x="8"   y="186" width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="24"  y="202" width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="32"  y="210" width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="52"  y="257" text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-03</text></g>
+        <g id="mapa-C-02" style="cursor:pointer;"><rect x="8"   y="278" width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="24"  y="294" width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="32"  y="302" width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="52"  y="349" text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-02</text></g>
+        <g id="mapa-C-01" style="cursor:pointer;"><rect x="8"   y="368" width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="24"  y="384" width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="32"  y="392" width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="52"  y="439" text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-01</text></g>
+        <g id="mapa-C-11" style="cursor:pointer;"><rect x="564" y="96"  width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="580" y="112" width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="588" y="120" width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="608" y="167" text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-11</text></g>
+        <g id="mapa-C-13" style="cursor:pointer;"><rect x="474" y="186" width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="490" y="202" width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="498" y="210" width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="518" y="257" text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-13</text></g>
+        <g id="mapa-C-12" style="cursor:pointer;"><rect x="564" y="186" width="88" height="88" rx="5" fill="#f0eff9" stroke="#c4b5fd" stroke-width="1.4"/><rect x="580" y="202" width="56" height="34" rx="4" fill="none" stroke="#9ca3af" stroke-width="1"/><rect x="588" y="210" width="40" height="18" rx="2" fill="none" stroke="#d1d5db" stroke-width="0.8"/><text x="608" y="257" text-anchor="middle" font-size="11" font-weight="500" fill="#5b21b6" font-family="sans-serif">C-12</text></g>
+      </svg>
+      <div id="mapa-ttip" style="position:absolute;background:#fff;border:0.5px solid #e8e6f0;border-radius:8px;padding:8px 12px;font-size:12px;pointer-events:none;z-index:20;display:none;min-width:150px;box-shadow:0 4px 14px rgba(0,0,0,0.12);">
+        <div id="mapa-tt-n" style="font-weight:500;font-size:13px;color:#1e1b2e;margin-bottom:2px;"></div>
+        <div id="mapa-tt-d" style="font-size:13px;font-weight:500;margin-bottom:2px;"></div>
+        <div id="mapa-tt-e" style="font-size:11px;color:#6b7280;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <script>
 const STORAGE_KEY = 'silencioso-v3';
 let chartBarras, chartDonut, chartTendencia, chartTimeline, chartLongTrend, chartFuentes;
@@ -683,7 +769,7 @@ function buildHeatmap() {
     html += `<div style="font-size:0.67rem;color:var(--text3);display:flex;align-items:center;font-family:var(--mono);padding-right:6px;justify-content:flex-end;">${f.label}</div>`;
     f.vals.forEach(v => {
       const c = dbaColor(v);
-      html += `<div title="${v} dBA" style="height:34px;border-radius:6px;background:${c.bg};display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:${c.text};font-family:var(--mono);cursor:default;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='scale(1.06)';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">${v}</div>`;
+      html += `<div title="${v} dBA" style="height:34px;border-radius:6px;background:${c.bg};display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:${c.text};font-family:var(--mono);cursor:default;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='scale(1.06)';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">${v}<span style="font-size:0.5rem;margin-left:1px;font-weight:400;">dBA</span></div>`;
     });
     html += '</div>';
   });
@@ -699,7 +785,7 @@ function initCharts() {
   chartDonut = new Chart(ctx1, {
     type: 'doughnut',
     data: { labels: ['Voz','Alarmas','Equipos','Otros'], datasets: [{ data:[38,24,16,22], backgroundColor:['#7c3aed','#f87171','#34d399','#a78bfa'], borderWidth:0, hoverOffset:6 }] },
-    options: { cutout:'72%', responsive:true, maintainAspectRatio:true, plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#1e1b2e',padding:10,cornerRadius:8} } }
+    options: { cutout:'72%', responsive:false, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#1e1b2e',padding:10,cornerRadius:8} } }
   });
 
   // Barras comparativa
@@ -730,12 +816,40 @@ function initCharts() {
 
   // Timeline horario del turno
   const ctx4 = document.getElementById('chartTimeline').getContext('2d');
+  // Plugin para separar turnos en el timeline
+  const // turnoPlugin removed
+
   chartTimeline = new Chart(ctx4, {
     type:'bar',
-    data:{ labels:['19h','20h','21h','22h','23h','00h','01h','02h','03h','04h','05h','06h','07h'], datasets:[{ data:[45,48,52,55,62,58,44,42,48,50,46,44,43], backgroundColor: [45,48,52,55,62,58,44,42,48,50,46,44,43].map(v=>v>=60?'#f87171':v>=45?'#fbbf24':'#34d399'), borderRadius:5, borderSkipped:false }] },
+    data:{ labels:['08h','09h','10h','11h','12h','13h','14h','15h','16h','17h','18h','19h','20h','21h','22h','23h','00h','01h','02h','03h','04h','05h','06h','07h'], datasets:[{ data:[42,44,46,48,50,47,45,50,55,58,52,45,48,52,55,62,58,44,42,48,50,46,44,43], backgroundColor: [42,44,46,48,50,47,45,50,55,58,52,45,48,52,55,62,58,44,42,48,50,46,44,43].map(v=>v>=60?'#f87171':v>=45?'#fbbf24':'#34d399'), borderRadius:5, borderSkipped:false }] },
     options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{beginAtZero:false,min:30,max:80,grid:{color:'#f0eff9'},ticks:{font:{size:9,family:'DM Mono'},color:'#9ca3af'}}, x:{grid:{display:false},ticks:{font:{size:9},color:'#6b7280'}} }, plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#1e1b2e',padding:10,cornerRadius:8,callbacks:{label:ctx=>ctx.parsed.y+' dBA'}} } }
   });
 
+
+  // Alinear barra de turnos con el gráfico
+  function alinearTurnos() {
+    if (!chartTimeline || !chartTimeline.chartArea) return;
+    var ca  = chartTimeline.chartArea;
+    var bw  = (ca.right - ca.left) / 24; // ancho por barra
+    var off = ca.left; // offset del eje Y
+    // Offset
+    var offEl = document.getElementById('shift-bar-offset');
+    var offEl2 = document.getElementById('shift-labels-offset');
+    if (offEl)  offEl.style.width  = off + 'px';
+    if (offEl2) offEl2.style.width = off + 'px';
+    // Anchos: Mañana=7 bars, Tarde=8 bars, Noche=9 bars
+    var m = document.getElementById('shift-manana');
+    var t = document.getElementById('shift-tarde');
+    var n = document.getElementById('shift-noche');
+    var lm = document.getElementById('shift-label-m');
+    var lt = document.getElementById('shift-label-t');
+    var ln = document.getElementById('shift-label-n');
+    var wM = bw * 7, wT = bw * 8, wN = bw * 9;
+    [m,lm].forEach(function(el){ if(el){el.style.width=wM+'px';el.style.flex='none';} });
+    [t,lt].forEach(function(el){ if(el){el.style.width=wT+'px';el.style.flex='none';} });
+    [n,ln].forEach(function(el){ if(el){el.style.width=wN+'px';el.style.flex='none';} });
+  }
+  setTimeout(alinearTurnos, 200);
   // Long trend 4 semanas
   const ctx5 = document.getElementById('chartLongTrend').getContext('2d');
   chartLongTrend = new Chart(ctx5, {
@@ -821,7 +935,7 @@ function actualizarTodo() {
     zonaTag.style.background='var(--verde-l)'; zonaTag.style.color='var(--verde)'; zonaTag.innerText='Sin alertas ✓';
   } else {
     zonaTag.style.background='var(--rojo-l)'; zonaTag.style.color='var(--rojo)';
-    zonaTag.innerText = cunasCriticas.length === 1 ? '1 incubadora sobre meta' : `${cunasCriticas.length} incubadoras sobre meta`;
+    zonaTag.innerText = cunasCriticas.length === 1 ? '1 incubadora sobre el límite' : `${cunasCriticas.length} incubadoras sobre el límite`;
   }
   document.getElementById('count-mod').innerText = modCount;
   document.getElementById('count-high').innerText = highCount;
@@ -835,7 +949,11 @@ function actualizarTodo() {
   else{promTag.style.background='var(--rojo-l)';promTag.style.color='var(--rojo)';promTag.innerText='Alto';}
 
   // Barra cursor
-  document.getElementById('bar-cursor').style.left = Math.min((prom/90)*100,100)+'%';
+  const pct2 = Math.min((prom/90)*100,100);
+  document.getElementById('bar-cursor').style.left = pct2+'%';
+  // Update bar tooltip with current dBA
+  const barTip = document.getElementById('bar-tooltip');
+  if(barTip) { barTip.textContent = prom + ' dBA'; barTip.style.left = pct2+'%'; }
 
   // Gauge
   actualizarGauge(pct);
@@ -851,7 +969,7 @@ function actualizarTodo() {
   // Estado pill
   const pill = document.getElementById('estado-pill');
   const txt = document.getElementById('estado-txt');
-  const recBox = document.getElementById('rec-box');
+  const recBox = document.getElementById('rec-box') || {style:{cssText:''},innerText:'',innerHTML:''};
   const interpBox = document.getElementById('interp-box');
   const noiseInfo = document.getElementById('noise-info');
 
@@ -860,21 +978,21 @@ function actualizarTodo() {
     pill.innerHTML='<span class="dot" style="background:var(--verde);"></span><span>ESTADO: ÓPTIMO</span>';
     recBox.style.cssText='padding:12px 16px;border-radius:var(--rs);font-size:0.78rem;font-weight:500;line-height:1.5;border-left:3px solid var(--verde);background:var(--verde-l);color:var(--verde);';
     recBox.innerText='✓ Ambiente ideal para el descanso neonatal.';
-    if(interpBox){interpBox.style.cssText='padding:14px 16px;border-radius:10px;font-size:0.82rem;font-weight:500;line-height:1.6;border-left:3px solid var(--verde);background:var(--verde-l);color:var(--verde);';interpBox.innerText=`✓ Excelente. Un ${pct}% del turno estuvo bajo la meta de 45 dBA. El ambiente acústico es seguro para los neonatos.`;}
+    if(interpBox){interpBox.style.cssText='padding:14px 16px;border-radius:10px;font-size:0.82rem;font-weight:500;line-height:1.6;border-left:3px solid var(--verde);background:var(--verde-l);color:var(--verde);';interpBox.innerHTML=`<strong>✓ Excelente trabajo.</strong> El ${pct}% del turno se mantuvo bajo los 45 dBA. Los bebés pudieron descansar en un ambiente acústico seguro. El sueño profundo en esta etapa es cuando el cerebro se organiza y crece — cada momento de silencio importa.`;}
     noiseInfo.style.background='var(--verde-l)';noiseInfo.style.color='var(--verde)';
   } else if(prom<=60){
     pill.style.cssText='background:var(--naranja-l);color:var(--naranja);display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:100px;font-size:0.78rem;font-weight:600;transition:all 0.4s;margin-left:auto;';
     pill.innerHTML='<span class="dot" style="background:var(--naranja);"></span><span>ESTADO: MODERADO</span>';
     recBox.style.cssText='padding:12px 16px;border-radius:var(--rs);font-size:0.78rem;font-weight:500;line-height:1.5;border-left:3px solid var(--naranja);background:var(--naranja-l);color:var(--naranja);';
     recBox.innerText='⚠ Nivel moderado. Evitar conversaciones y cerrar puertas suavemente.';
-    if(interpBox){interpBox.style.cssText='padding:14px 16px;border-radius:10px;font-size:0.82rem;font-weight:500;line-height:1.6;border-left:3px solid var(--naranja);background:var(--naranja-l);color:var(--naranja);';interpBox.innerText=`⚠ Atención. Solo el ${pct}% del turno estuvo bajo 45 dBA. Se recomienda revisar las fuentes de ruido moderado e implementar pausas acústicas.`;}
+    if(interpBox){interpBox.style.cssText='padding:14px 16px;border-radius:10px;font-size:0.82rem;font-weight:500;line-height:1.6;border-left:3px solid var(--naranja);background:var(--naranja-l);color:var(--naranja);';interpBox.innerHTML=`<strong>⚠ Podemos hacerlo mejor.</strong> Solo el ${pct}% del turno estuvo bajo los 45 dBA. El ruido moderado sostenido altera el sueño REM del neonato, que es cuando ocurre el mayor desarrollo neurológico. Pequeñas acciones del equipo marcan una gran diferencia.`;}
     noiseInfo.style.background='var(--naranja-l)';noiseInfo.style.color='var(--naranja)';
   } else {
     pill.style.cssText='background:var(--rojo-l);color:var(--rojo);display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:100px;font-size:0.78rem;font-weight:600;transition:all 0.4s;margin-left:auto;';
     pill.innerHTML='<span class="dot" style="background:var(--rojo);animation:pulse 1s infinite;"></span><span>ESTADO: CRÍTICO</span>';
     recBox.style.cssText='padding:12px 16px;border-radius:var(--rs);font-size:0.78rem;font-weight:500;line-height:1.5;border-left:3px solid var(--rojo);background:var(--rojo-l);color:var(--rojo);';
     recBox.innerText='✕ Niveles críticos. Reducir ruido inmediatamente.';
-    if(interpBox){interpBox.style.cssText='padding:14px 16px;border-radius:10px;font-size:0.82rem;font-weight:500;line-height:1.6;border-left:3px solid var(--rojo);background:var(--rojo-l);color:var(--rojo);';interpBox.innerText=`✕ Crítico. Solo el ${pct}% del turno bajo meta. Niveles altos sostenidos afectan el desarrollo neurológico neonatal. Acción inmediata requerida.`;}
+    if(interpBox){interpBox.style.cssText='padding:14px 16px;border-radius:10px;font-size:0.82rem;font-weight:500;line-height:1.6;border-left:3px solid var(--rojo);background:var(--rojo-l);color:var(--rojo);';interpBox.innerHTML=`<strong>✕ Atención urgente.</strong> Solo el ${pct}% del turno bajo el límite. Los niveles de ruido sostenidos sobre 45 dBA elevan el cortisol en los bebés, interfieren con la maduración cerebral y pueden prolongar la hospitalización. El equipo puede revertir esto.`;}
     noiseInfo.style.background='var(--rojo-l)';noiseInfo.style.color='var(--rojo)';
   }
 
@@ -885,6 +1003,7 @@ function actualizarTodo() {
   if(chartBarras){chartBarras.data.datasets[0].data[2]=prom;chartBarras.update('none');}
 
   guardarDatos();
+  actualizarMapa();
 }
 
 // ── Simular ──
@@ -951,15 +1070,88 @@ function mostrarToast(msg,color){
 }
 
 // ── Init ──
+
+// ── Mapa UCIN ──
+const MAPA_IDS=['C-01','C-02','C-03','C-04','C-05','C-06','C-07','C-08','C-09','C-10','C-11','C-12','C-13'];
+function mapaColor(v){
+  if(v===null||isNaN(v)) return{fill:'#f0eff9',stroke:'#c4b5fd',txt:'#5b21b6'};
+  if(v<45)  return{fill:'#d1fae5',stroke:'#34d399',txt:'#065f46'};
+  if(v<=60) return{fill:'#fef3c7',stroke:'#fbbf24',txt:'#78350f'};
+  return         {fill:'#fee2e2',stroke:'#f87171',txt:'#7f1d1d'};
+}
+function mapaEstado(v){
+  if(v===null||isNaN(v)) return'Sin datos';
+  if(v<45)  return'✓ Tranquilo';
+  if(v<=60) return'⚠ Moderado';
+  return'✕ Alto — revisar';
+}
+function actualizarMapa(){
+  for(let i=1;i<=13;i++){
+    const id='C-'+String(i).padStart(2,'0');
+    const cel=document.getElementById('val-c'+i);
+    const v=cel?parseInt(cel.innerText):NaN;
+    const g=document.getElementById('mapa-'+id);
+    if(!g) continue;
+    const col=mapaColor(isNaN(v)?null:v);
+    g.querySelector('rect').setAttribute('fill',col.fill);
+    g.querySelector('rect').setAttribute('stroke',col.stroke);
+    g.querySelector('text').setAttribute('fill',col.txt);
+  }
+}
+function initMapa(){
+  const svg=document.getElementById('mapa-svg');
+  const tip=document.getElementById('mapa-ttip');
+  if(!svg||!tip) return;
+  MAPA_IDS.forEach(id=>{
+    const g=document.getElementById('mapa-'+id);
+    if(!g) return;
+    const num=parseInt(id.split('-')[1]);
+    g.addEventListener('mouseenter',()=>{
+      const cel=document.getElementById('val-c'+num);
+      const v=cel?parseInt(cel.innerText):NaN;
+      const col=mapaColor(isNaN(v)?null:v);
+      document.getElementById('mapa-tt-n').textContent='Incubadora '+id;
+      const td=document.getElementById('mapa-tt-d');
+      td.textContent=!isNaN(v)?v+' dBA':'-- dBA';
+      td.style.color=col.txt;
+      document.getElementById('mapa-tt-e').textContent=mapaEstado(isNaN(v)?null:v);
+      tip.style.display='block';
+      g.querySelector('rect').style.opacity='0.78';
+    });
+    g.addEventListener('mousemove',e=>{
+      const wrap=svg.closest('div');
+      const rect=wrap.getBoundingClientRect();
+      let x=e.clientX-rect.left+14,y=e.clientY-rect.top+14;
+      if(x+165>rect.width) x-=178;
+      tip.style.left=x+'px'; tip.style.top=y+'px';
+    });
+    g.addEventListener('mouseleave',()=>{
+      tip.style.display='none';
+      g.querySelector('rect').style.opacity='1';
+    });
+  });
+}
+
 window.addEventListener('load',()=>{
   generarFilas();
   initCharts();
   buildHeatmap();
   actualizarFecha();
   buildHeatmap();
+  initMapa();
   if(!cargarDatos()) simular('moderado');
 });
 window.addEventListener('beforeunload', guardarDatos);
+
+// Bar track hover tooltip
+(function(){
+  const track = document.getElementById('bar-track-wrap');
+  const tip   = document.getElementById('bar-tooltip');
+  if(!track || !tip) return;
+  track.addEventListener('mouseenter', () => { tip.style.display='block'; });
+  track.addEventListener('mouseleave', () => { tip.style.display='none'; });
+})();
+
 </script>
 </body>
 </html>
