@@ -215,8 +215,6 @@ tbody tr:hover{background:var(--surface2);}
 /* La tarjeta de Fuentes de Ruido reacciona al hover y agranda el gráfico */
 #card-fuentes{transition:box-shadow 0.2s,transform 0.2s;}
 #card-fuentes:hover{box-shadow:0 6px 20px rgba(81,69,62,0.10);}
-#chartDonut{transition:transform 0.28s cubic-bezier(.34,1.56,.64,1);transform-origin:center center;}
-#card-fuentes:hover #chartDonut{transform:scale(1.18);}
 
 /* Osos dinámicos: micro-animaciones en los íconos de cada título */
 .card-icon img,.sec-title img{transition:transform .28s cubic-bezier(.34,1.7,.5,1);transform-origin:center bottom;will-change:transform;}
@@ -368,8 +366,8 @@ img[alt^="oso"]:hover{animation-play-state:paused;transform:translateY(-4px) sca
      Vista rápida para el cambio de turno
 ══════════════════════════════════════════════ -->
 <section class="section active" id="section-resumen">
-  <div style="display:flex;flex-direction:column;height:calc(100vh - 62px);box-sizing:border-box;overflow:hidden;gap:8px;padding:4px 4px;">
-  <div class="oso-kpi-row" style="display:flex;gap:16px;align-items:center;flex-shrink:0;">
+  <div style="display:flex;flex-direction:column;height:calc(100vh - 92px);box-sizing:border-box;overflow:hidden;gap:8px;padding:4px 4px;">
+  <div class="oso-kpi-row" style="display:flex;gap:16px;align-items:stretch;flex-shrink:0;">
 <div id="oso-mascota" aria-live="polite">
   <div id="oso-burbuja">
     <span id="oso-msg">Hola, soy silenci<strong>OSO</strong></span>
@@ -464,30 +462,30 @@ img[alt^="oso"]:hover{animation-play-state:paused;transform:translateY(-4px) sca
       </div>
         <div class="card-body" style="display:flex;align-items:center;gap:16px;padding:14px 18px;">
           <!-- Donut pequeño -->
-          <div style="position:relative;flex-shrink:0;width:90px;height:90px;display:flex;align-items:center;justify-content:center;">
-            <canvas id="chartDonut" style="width:90px!important;height:90px!important;"></canvas>
+          <div style="position:relative;flex-shrink:0;width:100px;height:100px;display:flex;align-items:center;justify-content:center;">
+            <canvas id="chartDonut" style="width:100px!important;height:100px!important;"></canvas>
             <div style="position:absolute;text-align:center;pointer-events:none;">
-              <div style="font-size:0.75rem;font-weight:300;font-family:var(--mono);color:var(--text);line-height:1;">100%</div>
+              <div id="donut-center" style="font-size:0.75rem;font-weight:300;font-family:var(--mono);color:var(--text);line-height:1.15;">100%</div>
             </div>
           </div>
           <!-- Leyenda en grid 2x2 compacto -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;flex:1;">
-            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:default;" onmouseenter="resaltarFuente(0)" onmouseleave="resaltarFuente(-1)">
               <div style="width:9px;height:9px;border-radius:2px;background:#9fb072;flex-shrink:0;"></div>
               <span style="color:var(--text2);">Conversaciones</span>
               <span style="font-family:var(--mono);font-weight:600;margin-left:auto;">38%</span>
             </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;">
-              <div style="width:9px;height:9px;border-radius:2px;background:#9fb072;flex-shrink:0;"></div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:default;" onmouseenter="resaltarFuente(1)" onmouseleave="resaltarFuente(-1)">
+              <div style="width:9px;height:9px;border-radius:2px;background:#cf8578;flex-shrink:0;"></div>
               <span style="color:var(--text2);">Alarmas</span>
               <span style="font-family:var(--mono);font-weight:600;margin-left:auto;">24%</span>
             </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:default;" onmouseenter="resaltarFuente(2)" onmouseleave="resaltarFuente(-1)">
               <div style="width:9px;height:9px;border-radius:2px;background:#51453e;flex-shrink:0;"></div>
               <span style="color:var(--text2);">Mobiliario</span>
               <span style="font-family:var(--mono);font-weight:600;margin-left:auto;">16%</span>
             </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:default;" onmouseenter="resaltarFuente(3)" onmouseleave="resaltarFuente(-1)">
               <div style="width:9px;height:9px;border-radius:2px;background:#c3c6f1;flex-shrink:0;"></div>
               <span style="color:var(--text2);">Otros</span>
               <span style="font-family:var(--mono);font-weight:600;margin-left:auto;">22%</span>
@@ -987,9 +985,15 @@ function initCharts() {
   const ctx1 = document.getElementById('chartDonut').getContext('2d');
   chartDonut = new Chart(ctx1, {
     type: 'doughnut',
-    data: { labels: ['Conversaciones','Alarmas','Mobiliario','Otros'], datasets: [{ data:[38,24,16,22], backgroundColor:['#9fb072','#cf8578','#51453e','#c3c6f1'], borderWidth:0, hoverOffset:6 }] },
-    options: { cutout:'72%', responsive:false, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#51453e',padding:10,cornerRadius:8} } }
+    data: { labels: ['Conversaciones','Alarmas','Mobiliario','Otros'], datasets: [{ data:[38,24,16,22], backgroundColor:['#9fb072','#cf8578','#51453e','#c3c6f1'], borderWidth:0, hoverOffset:8 }] },
+    options: { cutout:'72%', responsive:false, maintainAspectRatio:false, layout:{padding:10}, plugins:{ legend:{display:false}, tooltip:{enabled:false} } }
   });
+  // Hover en la leyenda → resalta (zoom) el segmento correspondiente de la dona
+  window.resaltarFuente = function(i){
+    if(!window.chartDonut) return;
+    chartDonut.setActiveElements(i>=0 ? [{datasetIndex:0,index:i}] : []);
+    chartDonut.update();
+  };
 
   // Barras comparativa
   const ctx2 = document.getElementById('chartBarras').getContext('2d');
@@ -1673,18 +1677,20 @@ window.addEventListener('beforeunload', guardarDatos);
      MASCOTA SilencioOSO (solo visible en Resumen)
 ══════════════════════════════════════════════ -->
 <style>
-/* KPIs más compactos en Resumen (para dejar sitio al oso a la izquierda) */
-#section-resumen .kpi-grid{margin-bottom:0;gap:12px;grid-template-columns:repeat(4,minmax(150px,1fr));justify-content:start;}
-#section-resumen .kpi{padding:20px 16px;min-height:150px;display:flex;flex-direction:column;justify-content:center;}
-#section-resumen .kpi-lbl{font-size:0.66rem;margin-bottom:6px;}
-#section-resumen .kpi-val{font-size:1.7rem;}
-#section-resumen .kpi-tag{margin-top:8px;font-size:0.64rem;padding:2px 7px;}
-#section-resumen .kpi .kpi-lbl + div,#section-resumen .kpi div[style*="0.62rem"]{font-size:0.6rem;}
+/* KPIs del Resumen: tarjetas alineadas, legibles y sin scroll */
+#section-resumen{padding:8px 18px 10px;min-height:0;}
+#section-resumen .kpi-grid{margin-bottom:0;gap:12px;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;}
+#section-resumen .kpi{padding:15px 16px 13px;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;}
+#section-resumen .kpi-lbl{font-size:0.64rem;margin-bottom:9px;}
+#section-resumen .kpi-val{font-size:2rem;font-weight:400;margin-bottom:2px;line-height:1.05;}
+#section-resumen .kpi-val span{font-size:0.8rem;}
+#section-resumen .kpi-tag{margin-top:auto;font-size:0.64rem;padding:3px 9px;align-self:flex-start;}
+#section-resumen #kpi-zona-list{margin:6px 0 0;}
 
 #oso-mascota{
   position:relative; z-index:5; flex-shrink:0;
-  display:flex; flex-direction:column; align-items:center; gap:8px;
-  width:150px; font-family:var(--font);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  width:222px; font-family:var(--font);
   pointer-events:none;
 }
 #oso-mascota.oculto{display:none;}
@@ -1694,9 +1700,11 @@ window.addEventListener('beforeunload', guardarDatos);
   border:1px solid var(--border);
   box-shadow:var(--shadow);
   border-radius:16px;
-  padding:11px 34px 11px 16px;
+  padding:9px 34px 9px 16px;
   font-size:0.84rem; font-weight:500;
-  max-width:240px; text-align:center;
+  max-width:265px; text-align:center;
+  box-sizing:border-box; min-height:54px;
+  display:flex; align-items:center; justify-content:center;
   opacity:0; transform:translateY(6px) scale(0.96);
   transition:opacity 0.35s ease, transform 0.35s ease;
 }
@@ -1720,7 +1728,7 @@ window.addEventListener('beforeunload', guardarDatos);
 #oso-boton{
   pointer-events:auto;
   border:none; padding:0; cursor:pointer;
-  width:130px; height:130px; border-radius:50%;
+  width:116px; height:116px; border-radius:50%;
   background:#b3b4e6;
   box-shadow:var(--shadow);
   overflow:hidden;
